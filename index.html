@@ -1,0 +1,103 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>ZYNC</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #000;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-family: "Inter", "Segoe UI", Arial, sans-serif;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    font-size: 128px;
+    font-weight: 700; /* balanced */
+    color: #C9C9C9;
+    letter-spacing: 6px; /* helps reduce visual heaviness */
+}
+
+/* Z animation */
+.z {
+    transform: translateY(140px);
+    opacity: 0;
+    animation: zEnter 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+/* YNC container */
+.ync {
+    overflow: hidden;
+    width: 0;
+    margin-left: 12px;
+}
+
+/* Letters */
+.ync span {
+    display: inline-block;
+    transform: translateX(-40px);
+    opacity: 0;
+}
+
+/* Animations */
+@keyframes zEnter {
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes yncReveal {
+    to {
+        width: 320px;
+    }
+}
+
+@keyframes yncSlide {
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="logo">
+    <div class="z">Z</div>
+    <div class="ync" id="ync">
+        <span id="letters">YNC</span>
+    </div>
+</div>
+
+<script>
+const z = document.querySelector(".z");
+const ync = document.getElementById("ync");
+const letters = document.getElementById("letters");
+
+z.addEventListener("animationend", () => {
+    ync.style.animation = "yncReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards";
+
+    setTimeout(() => {
+        letters.style.animation = "yncSlide 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards";
+    }, 120);
+});
+</script>
+
+</body>
+</html>
+```

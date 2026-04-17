@@ -1,4 +1,4 @@
-```html
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,7 +27,13 @@ body {
     height: 110%;
     transform: translate(-50%, -50%);
     object-fit: cover;
-    filter: blur(12px) brightness(0.6);
+
+    /* START CLEAN */
+    filter: blur(0px) brightness(1);
+
+    /* Smooth transition */
+    transition: filter 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+
     z-index: -2;
 }
 
@@ -35,7 +41,8 @@ body {
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.55);
+    background: rgba(0, 0, 0, 0);
+    transition: background 1.2s cubic-bezier(0.22, 1, 0.36, 1);
     z-index: -1;
 }
 
@@ -59,7 +66,7 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* Z (no auto animation now) */
+/* Z initial */
 .z {
     transform: translateY(140px);
     opacity: 0;
@@ -104,15 +111,12 @@ body {
 
 <body>
 
-<!-- Video -->
 <video class="video-bg" autoplay muted loop playsinline>
     <source src="zynctest.mp4" type="video/mp4">
 </video>
 
-<!-- Overlay -->
 <div class="overlay"></div>
 
-<!-- Logo -->
 <div class="container">
     <div class="logo">
         <div class="z" id="z">Z</div>
@@ -124,31 +128,36 @@ body {
 
 <script>
 const video = document.querySelector(".video-bg");
+const overlay = document.querySelector(".overlay");
 const z = document.getElementById("z");
 const ync = document.getElementById("ync");
 const letters = document.getElementById("letters");
 
-function startAnimation() {
-    // Start Z
-    z.style.animation = "zEnter 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards";
+function startSequence() {
+    // Fade in blur + dark overlay
+    video.style.filter = "blur(12px) brightness(0.6)";
+    overlay.style.background = "rgba(0, 0, 0, 0.55)";
 
-    z.addEventListener("animationend", () => {
-        // Reveal YNC container
-        ync.style.animation = "yncReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards";
+    // Start logo animation slightly after blur begins
+    setTimeout(() => {
+        z.style.animation = "zEnter 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards";
 
-        // Slide letters in
-        setTimeout(() => {
-            letters.style.animation = "yncSlide 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards";
-        }, 120);
-    }, { once: true });
+        z.addEventListener("animationend", () => {
+            ync.style.animation = "yncReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards";
+
+            setTimeout(() => {
+                letters.style.animation = "yncSlide 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards";
+            }, 120);
+        }, { once: true });
+
+    }, 200); // slight delay so blur starts first
 }
 
-// Wait until video is actually playing
+// Wait until video is playing
 video.addEventListener("playing", () => {
-    setTimeout(startAnimation, 2000); // 2 second delay
+    setTimeout(startSequence, 2000);
 }, { once: true });
 </script>
 
 </body>
 </html>
-```

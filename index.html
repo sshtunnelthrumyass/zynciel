@@ -13,29 +13,56 @@
 }
 
 body {
-    background: #000;
     height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     overflow: hidden;
     font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
+/* Background video */
+.video-bg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 110%;
+    height: 110%;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    filter: blur(12px) brightness(0.6);
+    z-index: -2;
+}
+
+/* Dark overlay */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: -1;
+}
+
+/* Center container */
+.container {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Logo */
 .logo {
     display: flex;
     align-items: center;
     font-size: 128px;
-    font-weight: 700; /* balanced */
+    font-weight: 700;
     color: #C9C9C9;
-    letter-spacing: 6px; /* helps reduce visual heaviness */
+    letter-spacing: 6px;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Z animation */
+/* Z (no auto animation now) */
 .z {
     transform: translateY(140px);
     opacity: 0;
-    animation: zEnter 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
 }
 
 /* YNC container */
@@ -77,25 +104,49 @@ body {
 
 <body>
 
-<div class="logo">
-    <div class="z">Z</div>
-    <div class="ync" id="ync">
-        <span id="letters">YNC</span>
+<!-- Video -->
+<video class="video-bg" autoplay muted loop playsinline>
+    <source src="zynctest.mp4" type="video/mp4">
+</video>
+
+<!-- Overlay -->
+<div class="overlay"></div>
+
+<!-- Logo -->
+<div class="container">
+    <div class="logo">
+        <div class="z" id="z">Z</div>
+        <div class="ync" id="ync">
+            <span id="letters">YNC</span>
+        </div>
     </div>
 </div>
 
 <script>
-const z = document.querySelector(".z");
+const video = document.querySelector(".video-bg");
+const z = document.getElementById("z");
 const ync = document.getElementById("ync");
 const letters = document.getElementById("letters");
 
-z.addEventListener("animationend", () => {
-    ync.style.animation = "yncReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards";
+function startAnimation() {
+    // Start Z
+    z.style.animation = "zEnter 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards";
 
-    setTimeout(() => {
-        letters.style.animation = "yncSlide 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards";
-    }, 120);
-});
+    z.addEventListener("animationend", () => {
+        // Reveal YNC container
+        ync.style.animation = "yncReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards";
+
+        // Slide letters in
+        setTimeout(() => {
+            letters.style.animation = "yncSlide 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards";
+        }, 120);
+    }, { once: true });
+}
+
+// Wait until video is actually playing
+video.addEventListener("playing", () => {
+    setTimeout(startAnimation, 2000); // 2 second delay
+}, { once: true });
 </script>
 
 </body>

@@ -18,26 +18,22 @@ body {
     font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
-/* Background video */
+/* Background video (NO zoom now) */
 .video-bg {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    width: 110%;
-    height: 110%;
-    transform: translate(-50%, -50%);
+    inset: 0;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 
-    /* START CLEAN */
+    /* start sharp */
     filter: blur(0px) brightness(1);
 
-    /* Smooth transition */
     transition: filter 1.2s cubic-bezier(0.22, 1, 0.36, 1);
-
     z-index: -2;
 }
 
-/* Dark overlay */
+/* Overlay */
 .overlay {
     position: fixed;
     inset: 0;
@@ -46,7 +42,7 @@ body {
     z-index: -1;
 }
 
-/* Center container */
+/* Centering */
 .container {
     height: 100vh;
     display: flex;
@@ -134,7 +130,7 @@ const ync = document.getElementById("ync");
 const letters = document.getElementById("letters");
 
 function startSequence() {
-    // Fade in blur + dark overlay
+    // Fade in blur + overlay
     video.style.filter = "blur(12px) brightness(0.6)";
     overlay.style.background = "rgba(0, 0, 0, 0.55)";
 
@@ -150,10 +146,10 @@ function startSequence() {
             }, 120);
         }, { once: true });
 
-    }, 200); // slight delay so blur starts first
+    }, 200);
 }
 
-// Wait until video is playing
+// Wait for video to actually start playing
 video.addEventListener("playing", () => {
     setTimeout(startSequence, 2000);
 }, { once: true });
@@ -161,3 +157,4 @@ video.addEventListener("playing", () => {
 
 </body>
 </html>
+

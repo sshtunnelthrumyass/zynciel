@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -116,16 +117,18 @@ body {
 }
 
 #popup img {
-    width: 75vw;              /* bigger */
-    max-width: 1100px;       /* bigger cap */
+    width: 75vw;
+    max-width: 1100px;
     height: auto;
 
     user-select: none;
     pointer-events: none;
 
     box-shadow: 0 25px 80px rgba(0,0,0,0.65);
+    border-radius: 4px;
 
-    border-radius: 4px;      /* reduced rounding */
+    /* smooth swap */
+    transition: opacity 0.2s ease;
 }
 </style>
 </head>
@@ -159,6 +162,7 @@ const ync = document.getElementById("ync");
 const letters = document.getElementById("letters");
 const logo = document.getElementById("logo");
 const popup = document.getElementById("popup");
+const popupImg = popup.querySelector("img");
 
 /* POPUP */
 function showPopup() {
@@ -170,6 +174,19 @@ function hidePopup() {
     popup.classList.remove("show");
     setTimeout(() => popup.style.display = "none", 300);
 }
+
+/* IMAGE TOGGLE */
+let toggled = false;
+
+popup.addEventListener("click", () => {
+    popupImg.style.opacity = 0;
+
+    setTimeout(() => {
+        toggled = !toggled;
+        popupImg.src = toggled ? "zynciel2.png" : "zynciel1.png";
+        popupImg.style.opacity = 1;
+    }, 120);
+});
 
 /* MAIN SEQUENCE */
 function startSequence() {
@@ -236,3 +253,4 @@ document.addEventListener("mouseup", () => {
 
 </body>
 </html>
+```

@@ -18,17 +18,14 @@ body {
     font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
-/* Background video (NO zoom now) */
+/* Video */
 .video-bg {
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-
-    /* start sharp */
     filter: blur(0px) brightness(1);
-
     transition: filter 1.2s cubic-bezier(0.22, 1, 0.36, 1);
     z-index: -2;
 }
@@ -37,12 +34,12 @@ body {
 .overlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0);
+    background: rgba(0,0,0,0);
     transition: background 1.2s cubic-bezier(0.22, 1, 0.36, 1);
     z-index: -1;
 }
 
-/* Centering */
+/* Center */
 .container {
     height: 100vh;
     display: flex;
@@ -58,24 +55,27 @@ body {
     font-weight: 700;
     color: #C9C9C9;
     letter-spacing: 6px;
-    text-rendering: optimizeLegibility;
-    -webkit-font-smoothing: antialiased;
+    opacity: 1;
+    transition: opacity 0.8s ease;
 }
 
-/* Z initial */
+.logo.fade-out {
+    opacity: 0;
+}
+
+/* Z */
 .z {
     transform: translateY(140px);
     opacity: 0;
 }
 
-/* YNC container */
+/* YNC */
 .ync {
     overflow: hidden;
     width: 0;
     margin-left: 12px;
 }
 
-/* Letters */
 .ync span {
     display: inline-block;
     transform: translateX(-40px);
@@ -84,23 +84,32 @@ body {
 
 /* Animations */
 @keyframes zEnter {
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 @keyframes yncReveal {
-    to {
-        width: 320px;
-    }
+    to { width: 320px; }
 }
 
 @keyframes yncSlide {
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Draggable image */
+#popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    cursor: grab;
+    display: none;
+    z-index: 10;
+}
+
+#popup img {
+    max-width: 300px;
+    user-select: none;
+    pointer-events: none;
 }
 </style>
 </head>
@@ -114,12 +123,17 @@ body {
 <div class="overlay"></div>
 
 <div class="container">
-    <div class="logo">
+    <div class="logo" id="logo">
         <div class="z" id="z">Z</div>
         <div class="ync" id="ync">
             <span id="letters">YNC</span>
         </div>
     </div>
+</div>
+
+<!-- Draggable popup -->
+<div id="popup">
+    <img src="zynciel.png" alt="popup">
 </div>
 
 <script>
@@ -128,33 +142,74 @@ const overlay = document.querySelector(".overlay");
 const z = document.getElementById("z");
 const ync = document.getElementById("ync");
 const letters = document.getElementById("letters");
+const logo = document.getElementById("logo");
+const popup = document.getElementById("popup");
 
 function startSequence() {
-    // Fade in blur + overlay
+    // Blur + overlay
     video.style.filter = "blur(12px) brightness(0.6)";
-    overlay.style.background = "rgba(0, 0, 0, 0.55)";
+    overlay.style.background = "rgba(0,0,0,0.55)";
 
-    // Start logo animation slightly after blur begins
     setTimeout(() => {
-        z.style.animation = "zEnter 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards";
+        z.style.animation = "zEnter 0.9s cubic-bezier(0.22,1,0.36,1) forwards";
 
         z.addEventListener("animationend", () => {
-            ync.style.animation = "yncReveal 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards";
+            ync.style.animation = "yncReveal 0.7s cubic-bezier(0.22,1,0.36,1) forwards";
 
             setTimeout(() => {
-                letters.style.animation = "yncSlide 0.7s cubic-bezier(0.22, 1, 0.36, 1) forwards";
+                letters.style.animation = "yncSlide 0.7s cubic-bezier(0.22,1,0.36,1) forwards";
+
+                // After full word visible → wait 3s → fade out
+                setTimeout(() => {
+                    logo.classList.add("fade-out");
+
+                    // Show popup after fade
+                    setTimeout(() => {
+                        popup.style.display = "block";
+                    }, 800);
+
+                }, 3000);
+
             }, 120);
+
         }, { once: true });
 
     }, 200);
 }
 
-// Wait for video to actually start playing
+// Wait for video
 video.addEventListener("playing", () => {
     setTimeout(startSequence, 2000);
 }, { once: true });
+
+/* Toggle popup with INSERT */
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Insert") {
+        popup.style.display = (popup.style.display === "none") ? "block" : "none";
+    }
+});
+
+/* Dragging */
+let isDragging = false, offsetX = 0, offsetY = 0;
+
+popup.addEventListener("mousedown", (e) => {
+    isDragging = true;
+    offsetX = e.clientX - popup.offsetLeft;
+    offsetY = e.clientY - popup.offsetTop;
+    popup.style.cursor = "grabbing";
+});
+
+document.addEventListener("mousemove", (e) => {
+    if (!isDragging) return;
+    popup.style.left = (e.clientX - offsetX) + "px";
+    popup.style.top = (e.clientY - offsetY) + "px";
+});
+
+document.addEventListener("mouseup", () => {
+    isDragging = false;
+    popup.style.cursor = "grab";
+});
 </script>
 
 </body>
 </html>
-

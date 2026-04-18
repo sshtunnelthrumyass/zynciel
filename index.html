@@ -18,7 +18,7 @@ body {
     font-family: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
-/* Video */
+/* VIDEO */
 .video-bg {
     position: fixed;
     inset: 0;
@@ -26,20 +26,20 @@ body {
     height: 100%;
     object-fit: cover;
     filter: blur(0px) brightness(1);
-    transition: filter 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: filter 1.2s cubic-bezier(0.22,1,0.36,1);
     z-index: -2;
 }
 
-/* Overlay */
+/* OVERLAY */
 .overlay {
     position: fixed;
     inset: 0;
     background: rgba(0,0,0,0);
-    transition: background 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+    transition: background 1.2s cubic-bezier(0.22,1,0.36,1);
     z-index: -1;
 }
 
-/* Center */
+/* CENTER */
 .container {
     height: 100vh;
     display: flex;
@@ -47,7 +47,7 @@ body {
     justify-content: center;
 }
 
-/* Logo */
+/* LOGO */
 .logo {
     display: flex;
     align-items: center;
@@ -82,7 +82,7 @@ body {
     opacity: 0;
 }
 
-/* Animations */
+/* ANIMATIONS */
 @keyframes zEnter {
     to { transform: translateY(0); opacity: 1; }
 }
@@ -95,21 +95,34 @@ body {
     to { transform: translateX(0); opacity: 1; }
 }
 
-/* Draggable image */
+/* POPUP */
 #popup {
     position: fixed;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%) scale(0.9);
     cursor: grab;
     display: none;
     z-index: 10;
+
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), 
+                opacity 0.3s ease;
+}
+
+#popup.show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
 }
 
 #popup img {
-    max-width: 300px;
+    width: 60vw;
+    max-width: 900px;
+    height: auto;
     user-select: none;
     pointer-events: none;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    border-radius: 12px;
 }
 </style>
 </head>
@@ -131,7 +144,7 @@ body {
     </div>
 </div>
 
-<!-- Draggable popup -->
+<!-- POPUP -->
 <div id="popup">
     <img src="zynciel.png" alt="popup">
 </div>
@@ -145,8 +158,20 @@ const letters = document.getElementById("letters");
 const logo = document.getElementById("logo");
 const popup = document.getElementById("popup");
 
+/* POPUP FUNCTIONS */
+function showPopup() {
+    popup.style.display = "block";
+    setTimeout(() => popup.classList.add("show"), 10);
+}
+
+function hidePopup() {
+    popup.classList.remove("show");
+    setTimeout(() => popup.style.display = "none", 300);
+}
+
+/* MAIN SEQUENCE */
 function startSequence() {
-    // Blur + overlay
+    // blur in
     video.style.filter = "blur(12px) brightness(0.6)";
     overlay.style.background = "rgba(0,0,0,0.55)";
 
@@ -159,13 +184,16 @@ function startSequence() {
             setTimeout(() => {
                 letters.style.animation = "yncSlide 0.7s cubic-bezier(0.22,1,0.36,1) forwards";
 
-                // After full word visible → wait 3s → fade out
+                // hold 3s
                 setTimeout(() => {
                     logo.classList.add("fade-out");
 
-                    // Show popup after fade
+                    // blur out
+                    video.style.filter = "blur(0px) brightness(1)";
+                    overlay.style.background = "rgba(0,0,0,0)";
+
                     setTimeout(() => {
-                        popup.style.display = "block";
+                        showPopup();
                     }, 800);
 
                 }, 3000);
@@ -177,19 +205,23 @@ function startSequence() {
     }, 200);
 }
 
-// Wait for video
+/* WAIT FOR VIDEO */
 video.addEventListener("playing", () => {
     setTimeout(startSequence, 2000);
 }, { once: true });
 
-/* Toggle popup with INSERT */
+/* INSERT TOGGLE */
 document.addEventListener("keydown", (e) => {
     if (e.key === "Insert") {
-        popup.style.display = (popup.style.display === "none") ? "block" : "none";
+        if (popup.classList.contains("show")) {
+            hidePopup();
+        } else {
+            showPopup();
+        }
     }
 });
 
-/* Dragging */
+/* DRAGGING */
 let isDragging = false, offsetX = 0, offsetY = 0;
 
 popup.addEventListener("mousedown", (e) => {
@@ -213,3 +245,4 @@ document.addEventListener("mouseup", () => {
 
 </body>
 </html>
+

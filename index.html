@@ -93,13 +93,14 @@ body {
 }
 
 /* POPUP (correct ratio, no stretch) */
+```css id="w2k9dp"
 #popup {
     position: fixed;
     top: 50%;
     left: 50%;
 
-    width: 65vw;
-    max-width: 1000px;
+    width: 45vw;        /* smaller */
+    max-width: 700px;  /* smaller cap */
     aspect-ratio: 1086 / 898;
 
     transform: translate(-50%, -50%) scale(0.9);
@@ -110,6 +111,8 @@ body {
     transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), 
                 opacity 0.3s ease;
 }
+```
+
 
 #popup.show {
     opacity: 1;

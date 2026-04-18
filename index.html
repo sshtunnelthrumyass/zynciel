@@ -92,27 +92,25 @@ body {
     to { transform: translateX(0); opacity: 1; }
 }
 
-/* POPUP (correct ratio, no stretch) */
-```css id="w2k9dp"
+/* POPUP (fixed + smaller) */
 #popup {
     position: fixed;
+
+    width: 45vw;
+    max-width: 700px;
+    aspect-ratio: 1086 / 898;
+
     top: 50%;
     left: 50%;
-
-    width: 45vw;        /* smaller */
-    max-width: 700px;  /* smaller cap */
-    aspect-ratio: 1086 / 898;
 
     transform: translate(-50%, -50%) scale(0.9);
     display: none;
     z-index: 10;
 
     opacity: 0;
-    transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), 
+    transition: transform 0.4s cubic-bezier(0.22,1,0.36,1),
                 opacity 0.3s ease;
 }
-```
-
 
 #popup.show {
     opacity: 1;
@@ -123,7 +121,7 @@ body {
 #popup img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* NO STRETCH */
+    object-fit: contain;
 
     user-select: none;
     pointer-events: none;
@@ -152,7 +150,7 @@ body {
 </div>
 
 <div id="popup">
-    <img src="zynciel8.png">
+    <img src="zynciel1.png">
 </div>
 
 <script>
@@ -165,13 +163,27 @@ const logo = document.getElementById("logo");
 const popup = document.getElementById("popup");
 const popupImg = popup.querySelector("img");
 
-/* PRELOAD */
-new Image().src = "zynciel9.png";
+/* preload */
+new Image().src = "zynciel2.png";
 
-/* SHOW/HIDE */
+/* popup show */
 function showPopup() {
     popup.style.display = "block";
-    setTimeout(() => popup.classList.add("show"), 10);
+    popup.style.top = "50%";
+    popup.style.left = "50%";
+
+    setTimeout(() => {
+        popup.classList.add("show");
+
+        // lock position after animation
+        setTimeout(() => {
+            const rect = popup.getBoundingClientRect();
+            popup.style.top = rect.top + "px";
+            popup.style.left = rect.left + "px";
+            popup.style.transform = "scale(1)";
+        }, 400);
+
+    }, 10);
 }
 
 function hidePopup() {
@@ -179,7 +191,7 @@ function hidePopup() {
     setTimeout(() => popup.style.display = "none", 300);
 }
 
-/* SEQUENCE */
+/* sequence */
 function startSequence() {
     video.style.filter = "blur(12px) brightness(0.6)";
     overlay.style.background = "rgba(0,0,0,0.55)";
@@ -214,14 +226,14 @@ video.addEventListener("playing", () => {
     setTimeout(startSequence, 2000);
 }, { once: true });
 
-/* TOGGLE */
+/* toggle */
 document.addEventListener("keydown", (e) => {
     if (e.key === "Insert") {
         popup.classList.contains("show") ? hidePopup() : showPopup();
     }
 });
 
-/* DRAG + CLICK */
+/* drag + click */
 let isDragging = false;
 let moved = false;
 let offsetX = 0, offsetY = 0;
@@ -252,7 +264,7 @@ popup.addEventListener("click", () => {
     if (moved) return;
 
     toggled = !toggled;
-    popupImg.src = toggled ? "zynciel9.png" : "zynciel8.png";
+    popupImg.src = toggled ? "zynciel2.png" : "zynciel1.png";
 });
 </script>
 

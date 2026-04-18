@@ -55,7 +55,6 @@ body {
     font-weight: 700;
     color: #C9C9C9;
     letter-spacing: 6px;
-    opacity: 1;
     transition: opacity 0.8s ease;
 }
 
@@ -63,13 +62,11 @@ body {
     opacity: 0;
 }
 
-/* Z */
 .z {
     transform: translateY(140px);
     opacity: 0;
 }
 
-/* YNC */
 .ync {
     overflow: hidden;
     width: 0;
@@ -95,15 +92,15 @@ body {
     to { transform: translateX(0); opacity: 1; }
 }
 
-/* POPUP CONTAINER (fixed size) */
+/* POPUP (correct ratio, no stretch) */
 #popup {
     position: fixed;
     top: 50%;
     left: 50%;
 
-    width: 75vw;
-    max-width: 1100px;
-    aspect-ratio: 16 / 9;
+    width: 65vw;
+    max-width: 1000px;
+    aspect-ratio: 1086 / 898;
 
     transform: translate(-50%, -50%) scale(0.9);
     display: none;
@@ -112,8 +109,6 @@ body {
     opacity: 0;
     transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), 
                 opacity 0.3s ease;
-
-    cursor: default;
 }
 
 #popup.show {
@@ -121,11 +116,11 @@ body {
     transform: translate(-50%, -50%) scale(1);
 }
 
-/* IMAGE LOCKED TO CONTAINER */
+/* IMAGE */
 #popup img {
     width: 100%;
     height: 100%;
-    object-fit: fill; /* forces identical size */
+    object-fit: contain; /* NO STRETCH */
 
     user-select: none;
     pointer-events: none;
@@ -154,7 +149,7 @@ body {
 </div>
 
 <div id="popup">
-    <img src="zynciel8.png">
+    <img src="zynciel1.png">
 </div>
 
 <script>
@@ -167,11 +162,10 @@ const logo = document.getElementById("logo");
 const popup = document.getElementById("popup");
 const popupImg = popup.querySelector("img");
 
-/* PRELOAD SECOND IMAGE */
-const preload = new Image();
-preload.src = "zynciel9.png";
+/* PRELOAD */
+new Image().src = "zynciel2.png";
 
-/* POPUP */
+/* SHOW/HIDE */
 function showPopup() {
     popup.style.display = "block";
     setTimeout(() => popup.classList.add("show"), 10);
@@ -182,25 +176,25 @@ function hidePopup() {
     setTimeout(() => popup.style.display = "none", 300);
 }
 
-/* MAIN SEQUENCE */
+/* SEQUENCE */
 function startSequence() {
     video.style.filter = "blur(12px) brightness(0.6)";
     overlay.style.background = "rgba(0,0,0,0.55)";
 
     setTimeout(() => {
-        z.style.animation = "zEnter 0.9s cubic-bezier(0.22,1,0.36,1) forwards";
+        z.style.animation = "zEnter 0.9s forwards";
 
         z.addEventListener("animationend", () => {
-            ync.style.animation = "yncReveal 0.7s cubic-bezier(0.22,1,0.36,1) forwards";
+            ync.style.animation = "yncReveal 0.7s forwards";
 
             setTimeout(() => {
-                letters.style.animation = "yncSlide 0.7s cubic-bezier(0.22,1,0.36,1) forwards";
+                letters.style.animation = "yncSlide 0.7s forwards";
 
                 setTimeout(() => {
                     logo.classList.add("fade-out");
 
-                    video.style.filter = "blur(0px) brightness(1)";
-                    overlay.style.background = "rgba(0,0,0,0)";
+                    video.style.filter = "blur(0) brightness(1)";
+                    overlay.style.background = "transparent";
 
                     setTimeout(showPopup, 800);
 
@@ -213,12 +207,11 @@ function startSequence() {
     }, 200);
 }
 
-/* WAIT FOR VIDEO */
 video.addEventListener("playing", () => {
     setTimeout(startSequence, 2000);
 }, { once: true });
 
-/* INSERT TOGGLE */
+/* TOGGLE */
 document.addEventListener("keydown", (e) => {
     if (e.key === "Insert") {
         popup.classList.contains("show") ? hidePopup() : showPopup();
@@ -227,13 +220,13 @@ document.addEventListener("keydown", (e) => {
 
 /* DRAG + CLICK */
 let isDragging = false;
-let hasMoved = false;
+let moved = false;
 let offsetX = 0, offsetY = 0;
 let toggled = false;
 
 popup.addEventListener("mousedown", (e) => {
     isDragging = true;
-    hasMoved = false;
+    moved = false;
 
     offsetX = e.clientX - popup.offsetLeft;
     offsetY = e.clientY - popup.offsetTop;
@@ -242,7 +235,7 @@ popup.addEventListener("mousedown", (e) => {
 document.addEventListener("mousemove", (e) => {
     if (!isDragging) return;
 
-    hasMoved = true;
+    moved = true;
 
     popup.style.left = (e.clientX - offsetX) + "px";
     popup.style.top = (e.clientY - offsetY) + "px";
@@ -253,10 +246,10 @@ document.addEventListener("mouseup", () => {
 });
 
 popup.addEventListener("click", () => {
-    if (hasMoved) return;
+    if (moved) return;
 
     toggled = !toggled;
-    popupImg.src = toggled ? "zynciel9.png" : "zynciel8.png";
+    popupImg.src = toggled ? "zynciel2.png" : "zynciel1.png";
 });
 </script>
 
